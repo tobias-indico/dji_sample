@@ -63,6 +63,7 @@ public class VirtualStickView extends RelativeLayout
     private Button btnSetYawControlMode;
     private Button btnSetVerticalControlMode;
     private Button btnSetRollPitchControlMode;
+    private Button indicoMissionBtn;
     private ToggleButton btnSimulator;
     private Button btnTakeOff;
 
@@ -127,6 +128,8 @@ public class VirtualStickView extends RelativeLayout
 
     private void initUI() {
         btnEnableVirtualStick = (Button) findViewById(R.id.btn_enable_virtual_stick);
+        indicoMissionBtn = (Button) findViewById(R.id.btn_indico_mission);
+        indicoMissionBtn.setOnClickListener(this);
         btnDisableVirtualStick = (Button) findViewById(R.id.btn_disable_virtual_stick);
         btnHorizontalCoordinate = (Button) findViewById(R.id.btn_horizontal_coordinate);
         btnSetYawControlMode = (Button) findViewById(R.id.btn_yaw_control_mode);
@@ -302,12 +305,7 @@ public class VirtualStickView extends RelativeLayout
                 }
 
                 // Auto land
-                flightController.startLanding(new CommonCallbacks.CompletionCallback() {
-                    @Override
-                    public void onResult(DJIError djiError) {
-                        DialogUtils.showDialogBasedOnError(getContext(), djiError);
-                    }
-                });
+                flightController.startLanding(djiError1 -> DialogUtils.showDialogBasedOnError(getContext(), djiError1));
 
             }
         });
