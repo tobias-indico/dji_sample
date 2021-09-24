@@ -31,6 +31,7 @@
                 android:layout_below="@+id/video_view_fpv_video_feed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="rtmp://192.168.1.174:1935"
                 android:inputType="textUri" />
 
             <Button
