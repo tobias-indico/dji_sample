@@ -277,44 +277,33 @@ public class MobileRemoteControllerView extends RelativeLayout
             DialogUtils.showDialogBasedOnError(getContext(), djiError);
             if (null == djiError) {
 
-                // calibrate
-                if (flightController.isPropellerCalibrationSupported())
-                    flightController.startPropellerCalibration(djiError1 -> {
-                        if (djiError1 == null) {
-                            flightController.stopPropellerCalibration(djiError2 -> {
-                                if (djiError2 == null) {
-                                    // Hang around
-                        //                try {
-                        //                    TimeUnit.SECONDS.sleep(5);
-                        //                } catch (InterruptedException e) {
-                        //
-                        //                }
+                // Hang around
+                //                try {
+                //                    TimeUnit.SECONDS.sleep(5);
+                //                } catch (InterruptedException e) {
+                //
+                //                }
 
-                                    // fly up
-                                    flyYouFools(flightController);
+                // fly up
+                flyYouFools(flightController);
 
-                                    // Capture
-                                    takePhoto();
+                // Capture
+                takePhoto();
 
-                                    // wait
-                                    try {
-                                        TimeUnit.SECONDS.sleep(3);
-                                    } catch (InterruptedException e) {
+                // wait
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
 
-                                    }
+                }
 
-                                    // Auto land
-                                    flightController.startLanding(new CompletionCallback() {
-                                        @Override
-                                        public void onResult(DJIError djiError) {
-                                            DialogUtils.showDialogBasedOnError(getContext(), djiError);
-                                        }
-                                    });
-                                }
-
-                            });
-                        }
-                    });
+                // Auto land
+                flightController.startLanding(new CompletionCallback() {
+                    @Override
+                    public void onResult(DJIError djiError) {
+                        DialogUtils.showDialogBasedOnError(getContext(), djiError);
+                    }
+                });
 
             }
         });
