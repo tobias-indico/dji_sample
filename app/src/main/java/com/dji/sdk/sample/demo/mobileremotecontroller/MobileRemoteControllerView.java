@@ -53,6 +53,7 @@ public class MobileRemoteControllerView extends RelativeLayout
     private Button autoLand;
     private Button forceLand;
     private Button indicoMissionBtn;
+    private Button indicoLogBtn;
 
     private TextView textView;
 
@@ -107,6 +108,8 @@ public class MobileRemoteControllerView extends RelativeLayout
         autoLand.setOnClickListener(this);
         indicoMissionBtn = (Button) findViewById(R.id.btn_indico_mission);
         indicoMissionBtn.setOnClickListener(this);
+        indicoLogBtn = (Button) findViewById(R.id.btn_log_stuff);
+        indicoLogBtn.setOnClickListener(this);
 //        forceLand = (Button) findViewById(R.id.btn_force_land);
 //        forceLand.setOnClickListener(this);
         btnSimulator = (ToggleButton) findViewById(R.id.btn_start_simulator);
@@ -333,7 +336,6 @@ public class MobileRemoteControllerView extends RelativeLayout
         Log.d("Constanst_test", "flightController.toString(): " + flightController.toString());
 
         Log.d("Constanst_test", "hasReachedMaxFlightHeight: " + flightController.getState().hasReachedMaxFlightHeight());
-
 
         flightController.getMaxFlightHeight(new CommonCallbacks.CompletionCallbackWith<Integer>() {
             @Override
