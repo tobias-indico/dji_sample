@@ -196,21 +196,18 @@ public class VirtualStickView extends RelativeLayout
             float pitchJoyControlMaxSpeed = 10;
             float rollJoyControlMaxSpeed = 10;
 
-//            if (horizontalCoordinateFlag) {
-//                if (rollPitchControlModeFlag) {
-//                    pitch = (float) (pitchJoyControlMaxSpeed * pX);
-//
-//                    roll = (float) (rollJoyControlMaxSpeed * pY);
-//                } else {
-//                    pitch = -(float) (pitchJoyControlMaxSpeed * pY);
-//
-//                    roll = (float) (rollJoyControlMaxSpeed * pX);
-//                }
-//            }
-                pitch = 0;
-                roll = 0;
-                yaw = .1f;
-                throttle = 0;//0.1f;
+            if (horizontalCoordinateFlag) {
+                if (rollPitchControlModeFlag) {
+                    pitch = (float) (pitchJoyControlMaxSpeed * pX);
+
+                    roll = (float) (rollJoyControlMaxSpeed * pY);
+                } else {
+                    pitch = -(float) (pitchJoyControlMaxSpeed * pY);
+
+                    roll = (float) (rollJoyControlMaxSpeed * pX);
+                }
+            }
+
             if (null == sendVirtualStickDataTimer) {
                 sendVirtualStickDataTask = new SendVirtualStickDataTask();
                 sendVirtualStickDataTimer = new Timer();
@@ -282,17 +279,18 @@ public class VirtualStickView extends RelativeLayout
     }
 
     private void indicoMission(FlightController flightController) {
+        flightController.setVirtualStickModeEnabled(true, djiError -> DialogUtils.showDialogBasedOnError(getContext(), djiError));
         // Take OFF
         flightController.startTakeoff(djiError -> {
             DialogUtils.showDialogBasedOnError(getContext(), djiError);
             if (null == djiError) {
 
-                // Hang around
-                //                try {
-                //                    TimeUnit.SECONDS.sleep(5);
-                //                } catch (InterruptedException e) {
-                //
-                //                }
+//                 Hang around
+                                try {
+                                    TimeUnit.SECONDS.sleep(2);
+                                } catch (InterruptedException e) {
+
+                                }
 
                 // fly up
                 flyYouFools(flightController);
@@ -315,27 +313,17 @@ public class VirtualStickView extends RelativeLayout
     }
 
     private void flyYouFools(FlightController flightController) {
-        flightController.setVirtualStickModeEnabled(true, djiError -> DialogUtils.showDialogBasedOnError(getContext(), djiError));
 
-        float pitchJoyControlMaxSpeed = 10;
-        float rollJoyControlMaxSpeed = 10;
-
-        if (horizontalCoordinateFlag) {
-            if (rollPitchControlModeFlag) {
-                pitch = (float) (pitchJoyControlMaxSpeed * 0);
-
-                roll = (float) (rollJoyControlMaxSpeed * 1);
-            } else {
-                pitch = -(float) (pitchJoyControlMaxSpeed * 1);
-
-                roll = (float) (rollJoyControlMaxSpeed * 0);
+        while (flightController.getState().getFlightTimeInSeconds() < 9) {
+            yaw = .1f;
+            pitch = 0;
+            roll=0;
+            throttle = 0;
+            if (null == sendVirtualStickDataTimer) {
+                sendVirtualStickDataTask = new SendVirtualStickDataTask();
+                sendVirtualStickDataTimer = new Timer();
+                sendVirtualStickDataTimer.schedule(sendVirtualStickDataTask, 100, 200);
             }
-        }
-
-        if (null == sendVirtualStickDataTimer) {
-            sendVirtualStickDataTask = new SendVirtualStickDataTask();
-            sendVirtualStickDataTimer = new Timer();
-            sendVirtualStickDataTimer.schedule(sendVirtualStickDataTask, 100, 200);
         }
     }
 
