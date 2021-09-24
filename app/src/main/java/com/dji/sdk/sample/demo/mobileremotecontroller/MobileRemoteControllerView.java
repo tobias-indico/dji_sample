@@ -22,12 +22,15 @@ import com.dji.sdk.sample.internal.utils.OnScreenJoystick;
 import com.dji.sdk.sample.internal.utils.ToastUtils;
 import com.dji.sdk.sample.internal.view.PresentableView;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import dji.common.camera.SettingsDefinitions;
 import dji.common.error.DJIError;
 import dji.common.flightcontroller.simulator.InitializationData;
 import dji.common.flightcontroller.simulator.SimulatorState;
+import dji.common.flightcontroller.virtualstick.FlightControlData;
 import dji.common.model.LocationCoordinate2D;
 import dji.common.util.CommonCallbacks;
 import dji.common.util.CommonCallbacks.CompletionCallback;
@@ -58,6 +61,11 @@ public class MobileRemoteControllerView extends RelativeLayout
     private OnScreenJoystick screenJoystickLeft;
     private MobileRemoteController mobileRemoteController;
     private FlightControllerKey isSimulatorActived;
+
+    private float pitch;
+    private float roll;
+    private float yaw;
+    private float throttle;
 
     public MobileRemoteControllerView(Context context) {
         super(context);
@@ -311,15 +319,9 @@ public class MobileRemoteControllerView extends RelativeLayout
 
     private void flyYouFools(FlightController flightController) {
         flightController.setVirtualStickModeEnabled(true, djiError -> DialogUtils.showDialogBasedOnError(getContext(), djiError));
-//        double lat = flightController.getState().getHomeLocation().getLatitude();
 
-//        float pY = 0.3f;
-//        ToastUtils.setResultToToast("Height " + flightController.getState().getUltrasonicHeightInMeters());
-        ToastUtils.setResultToToast("Height " + flightController.getState().getUltrasonicHeightInMeters());
-//        while (flightController.getState().getUltrasonicHeightInMeters() < 8) {
         while (flightController.getState().getFlightTimeInSeconds() < 10) {
             if (mobileRemoteController != null) {
-//                        mobileRemoteController.setLeftStickHorizontal(pX);
                 mobileRemoteController.setLeftStickVertical(1f);
             }
         }
@@ -377,6 +379,27 @@ public class MobileRemoteControllerView extends RelativeLayout
 
                 }
             });
+        }
+    }
+
+    private class SendVirtualStickDataTask extends TimerTask {
+
+        @Override
+        public void run() {
+            if (ModuleVerificationUtil.isFlightControllerAvailable()) {
+                DJISampleApplication.getAircraftInstance()
+                        .getFlightController()
+                        .sendVirtualStickFlightControlData(new FlightControlData(pitch,
+                                        roll,
+                                        yaw,
+                                        throttle),
+                                new CommonCallbacks.CompletionCallback() {
+                                    @Override
+                                    public void onResult(DJIError djiError) {
+
+                                    }
+                                });
+            }
         }
     }
 

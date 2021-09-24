@@ -3,6 +3,8 @@
        android:layout_width="match_parent"
        android:layout_height="match_parent">
 
+
+
     <Button
         android:id="@+id/btn_disable_virtual_stick"
         android:layout_centerHorizontal="true"
@@ -10,6 +12,14 @@
         android:text="Disable Virtual Stick"
         style="@style/common_button"
     />
+
+    <Button
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_indico_mission"
+        android:text="Indico mission"
+        android:layout_marginBottom="10dp"
+        style="@style/common_button"/>
 
     <TextView
         android:layout_marginTop="70dp"
@@ -39,6 +49,8 @@
         android:layout_toRightOf="@id/btn_disable_virtual_stick"
         android:text="ChangeCoordinateSystem"
         style="@style/common_button"/>
+
+
 
 
     <Button

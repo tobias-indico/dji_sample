@@ -2,6 +2,7 @@ package com.dji.sdk.sample.demo.flightcontroller;
 
 import android.app.Service;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +24,9 @@ import com.dji.sdk.sample.internal.view.PresentableView;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
+import dji.common.camera.SettingsDefinitions;
 import dji.common.error.DJIError;
 import dji.common.flightcontroller.simulator.InitializationData;
 import dji.common.flightcontroller.simulator.SimulatorState;
@@ -36,8 +39,10 @@ import dji.common.model.LocationCoordinate2D;
 import dji.common.util.CommonCallbacks;
 import dji.keysdk.FlightControllerKey;
 import dji.keysdk.KeyManager;
+import dji.sdk.camera.Camera;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.flightcontroller.Simulator;
+import dji.sdk.media.MediaFile;
 
 //TODO: Refactor needed
 
@@ -176,37 +181,34 @@ public class VirtualStickView extends RelativeLayout
             ToastUtils.setResultToToast("Disconnected!");
         }
 
-        screenJoystickLeft.setJoystickListener(new OnScreenJoystickListener() {
+        screenJoystickLeft.setJoystickListener((OnScreenJoystickListener) (joystick, pX, pY) -> {
+            if (Math.abs(pX) < 0.02) {
+                pX = 0;
+            }
 
-            @Override
-            public void onTouch(OnScreenJoystick joystick, float pX, float pY) {
-                if (Math.abs(pX) < 0.02) {
-                    pX = 0;
+            if (Math.abs(pY) < 0.02) {
+                pY = 0;
+            }
+
+            float pitchJoyControlMaxSpeed = 10;
+            float rollJoyControlMaxSpeed = 10;
+
+            if (horizontalCoordinateFlag) {
+                if (rollPitchControlModeFlag) {
+                    pitch = (float) (pitchJoyControlMaxSpeed * pX);
+
+                    roll = (float) (rollJoyControlMaxSpeed * pY);
+                } else {
+                    pitch = -(float) (pitchJoyControlMaxSpeed * pY);
+
+                    roll = (float) (rollJoyControlMaxSpeed * pX);
                 }
+            }
 
-                if (Math.abs(pY) < 0.02) {
-                    pY = 0;
-                }
-                float pitchJoyControlMaxSpeed = 10;
-                float rollJoyControlMaxSpeed = 10;
-
-                if (horizontalCoordinateFlag) {
-                    if (rollPitchControlModeFlag) {
-                        pitch = (float) (pitchJoyControlMaxSpeed * pX);
-
-                        roll = (float) (rollJoyControlMaxSpeed * pY);
-                    } else {
-                        pitch = -(float) (pitchJoyControlMaxSpeed * pY);
-
-                        roll = (float) (rollJoyControlMaxSpeed * pX);
-                    }
-                }
-
-                if (null == sendVirtualStickDataTimer) {
-                    sendVirtualStickDataTask = new SendVirtualStickDataTask();
-                    sendVirtualStickDataTimer = new Timer();
-                    sendVirtualStickDataTimer.schedule(sendVirtualStickDataTask, 100, 200);
-                }
+            if (null == sendVirtualStickDataTimer) {
+                sendVirtualStickDataTask = new SendVirtualStickDataTask();
+                sendVirtualStickDataTimer = new Timer();
+                sendVirtualStickDataTimer.schedule(sendVirtualStickDataTask, 100, 200);
             }
         });
 
@@ -244,7 +246,115 @@ public class VirtualStickView extends RelativeLayout
         screenJoystickLeft.setJoystickListener(null);
         screenJoystickRight.setJoystickListener(null);
     }
+    private void takePhoto() {
+        try {
+            Log.d("SHOOT_PHOTO_TEST", "Before photo");
+            initCamera();
 
+            DJISampleApplication.getProductInstance()
+                    .getCamera()
+                    .startShootPhoto(new CommonCallbacks.CompletionCallback() {
+                        @Override
+                        public void onResult(DJIError djiError) {
+                            if (null == djiError) {
+                                ToastUtils.setResultToToast(getContext().getString(R.string.success));
+                            } else {
+                                ToastUtils.setResultToToast(djiError.getDescription());
+                            }
+//                            post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    middleBtn.setEnabled(true);
+//                                }
+//                            });
+                        }
+                    });
+            Log.d("SHOOT_PHOTO_TEST", "After photo");
+        } catch (Exception e) {
+            Log.d("SHOOT_PHOTO_TEST", "Failed: " + e.getMessage());
+        }
+    }
+
+    private void indicoMission(FlightController flightController) {
+        // Take OFF
+        flightController.startTakeoff(djiError -> {
+            DialogUtils.showDialogBasedOnError(getContext(), djiError);
+            if (null == djiError) {
+
+                // Hang around
+                //                try {
+                //                    TimeUnit.SECONDS.sleep(5);
+                //                } catch (InterruptedException e) {
+                //
+                //                }
+
+                // fly up
+                flyYouFools(flightController);
+
+                // Capture
+                takePhoto();
+
+                // wait
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+
+                }
+
+                // Auto land
+                flightController.startLanding(new CommonCallbacks.CompletionCallback() {
+                    @Override
+                    public void onResult(DJIError djiError) {
+                        DialogUtils.showDialogBasedOnError(getContext(), djiError);
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void flyYouFools(FlightController flightController) {
+        flightController.setVirtualStickModeEnabled(true, djiError -> DialogUtils.showDialogBasedOnError(getContext(), djiError));
+
+        float pitchJoyControlMaxSpeed = 10;
+        float rollJoyControlMaxSpeed = 10;
+
+        if (horizontalCoordinateFlag) {
+            if (rollPitchControlModeFlag) {
+                pitch = (float) (pitchJoyControlMaxSpeed * 0);
+
+                roll = (float) (rollJoyControlMaxSpeed * 1);
+            } else {
+                pitch = -(float) (pitchJoyControlMaxSpeed * 1);
+
+                roll = (float) (rollJoyControlMaxSpeed * 0);
+            }
+        }
+        
+        if (null == sendVirtualStickDataTimer) {
+            sendVirtualStickDataTask = new SendVirtualStickDataTask();
+            sendVirtualStickDataTimer = new Timer();
+            sendVirtualStickDataTimer.schedule(sendVirtualStickDataTask, 100, 200);
+        }
+    }
+
+    private void initCamera() {
+        Camera camera;
+        if (ModuleVerificationUtil.isCameraModuleAvailable()) {
+            camera = DJISampleApplication.getAircraftInstance().getCamera();
+            if (ModuleVerificationUtil.isMatrice300RTK() || ModuleVerificationUtil.isMavicAir2()) {
+                camera.setFlatMode(SettingsDefinitions.FlatCameraMode.PHOTO_SINGLE, djiError -> ToastUtils.setResultToToast("setFlatMode to PHOTO_SINGLE"));
+            } else {
+                camera.setMode(SettingsDefinitions.CameraMode.SHOOT_PHOTO, djiError -> ToastUtils.setResultToToast("setMode to shoot_PHOTO"));
+            }
+            camera.setMediaFileCallback(new MediaFile.Callback() {
+                @Override
+                public void onNewFile(@NonNull MediaFile mediaFile) {
+                    ToastUtils.setResultToToast("New photo generated");
+                }
+            });
+        }
+    }
     @Override
     public void onClick(View v) {
         FlightController flightController = ModuleVerificationUtil.getFlightController();
@@ -252,6 +362,11 @@ public class VirtualStickView extends RelativeLayout
             return;
         }
         switch (v.getId()) {
+            case R.id.btn_indico_mission:
+
+                indicoMission(flightController);
+                break;
+
             case R.id.btn_enable_virtual_stick:
                 flightController.setVirtualStickModeEnabled(true, new CommonCallbacks.CompletionCallback() {
                     @Override
