@@ -22,7 +22,6 @@ import com.dji.sdk.sample.internal.utils.OnScreenJoystick;
 import com.dji.sdk.sample.internal.utils.ToastUtils;
 import com.dji.sdk.sample.internal.view.PresentableView;
 
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
@@ -332,6 +331,21 @@ public class MobileRemoteControllerView extends RelativeLayout
         ToastUtils.setResultToToast("getCompassCount " + flightController.getCompassCount());
 
         Log.d("Constanst_test", "flightController.toString(): " + flightController.toString());
+
+        Log.d("Constanst_test", "hasReachedMaxFlightHeight: " + flightController.getState().hasReachedMaxFlightHeight());
+
+
+        flightController.getMaxFlightHeight(new CommonCallbacks.CompletionCallbackWith<Integer>() {
+            @Override
+            public void onSuccess(Integer integer) {
+                Log.d("Constanst_test", "getMaxFlightHeight: " + integer.toString());
+            }
+
+            @Override
+            public void onFailure(DJIError djiError) {
+                Log.d("Constanst_test", "getMaxFlightHeight: " + djiError.toString());
+            }
+        });
     }
 
 
