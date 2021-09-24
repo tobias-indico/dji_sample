@@ -313,6 +313,12 @@ public class MobileRemoteControllerView extends RelativeLayout
     }
 
     private void flyYouFools(FlightController flightController) {
+        flightController.setVirtualStickModeEnabled(true, new CommonCallbacks.CompletionCallback() {
+            @Override
+            public void onResult(DJIError djiError) {
+                DialogUtils.showDialogBasedOnError(getContext(), djiError);
+            }
+        });
 //        double lat = flightController.getState().getHomeLocation().getLatitude();
 
 //        float pY = 0.3f;
