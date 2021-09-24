@@ -92,7 +92,6 @@ public class LiveStreamView extends LinearLayout implements PresentableView, Vie
         }
 
         showUrlInputEdit = (EditText) findViewById(R.id.edit_live_show_url_input);
-        showUrlInputEdit.setText(liveShowUrl);
 
         startLiveShowBtn = (Button) findViewById(R.id.btn_start_live_show);
         enableVideoEncodingBtn = (Button) findViewById(R.id.btn_enable_video_encode);
