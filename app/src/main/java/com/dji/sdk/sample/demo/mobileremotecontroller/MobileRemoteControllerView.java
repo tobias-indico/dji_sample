@@ -316,7 +316,7 @@ public class MobileRemoteControllerView extends RelativeLayout
 //        double lat = flightController.getState().getHomeLocation().getLatitude();
 
 //        float pY = 0.3f;
-        while (!flightController.getState().hasReachedMaxFlightHeight()) {
+        while (flightController.getState().getUltrasonicHeightInMeters() < 8) {
             if (mobileRemoteController != null) {
 //                        mobileRemoteController.setLeftStickHorizontal(pX);
                 mobileRemoteController.setLeftStickVertical(0.8f);
