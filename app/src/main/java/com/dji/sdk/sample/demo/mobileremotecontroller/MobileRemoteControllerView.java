@@ -273,52 +273,55 @@ public class MobileRemoteControllerView extends RelativeLayout
 
     private void indicoMission(FlightController flightController) {
         // Take OFF
-        flightController.startTakeoff(new CompletionCallback() {
+        flightController.startTakeoff(djiError -> {
+            DialogUtils.showDialogBasedOnError(getContext(), djiError);
+            if (null == djiError) {
 
-            @Override
-            public void onResult(DJIError djiError) {
-                DialogUtils.showDialogBasedOnError(getContext(), djiError);
+                // calibrate
+                if (flightController.isPropellerCalibrationSupported())
+                    flightController.startPropellerCalibration(djiError1 -> {
+                        if (djiError1 == null) {
+                            flightController.stopPropellerCalibration(djiError2 -> {
+                                if (djiError2 == null) {
+                                    // Hang around
+                        //                try {
+                        //                    TimeUnit.SECONDS.sleep(5);
+                        //                } catch (InterruptedException e) {
+                        //
+                        //                }
 
-                // Hang around
-                if (null == djiError) {
-                    try {
-                        TimeUnit.SECONDS.sleep(5);
-                    } catch (InterruptedException e) {
+                                    // fly up
+                                    flyYouFools(flightController);
 
-                    }
+                                    // Capture
+                                    takePhoto();
 
-                    // fly somewhere
-                    flyYouFools(flightController);
+                                    // wait
+                                    try {
+                                        TimeUnit.SECONDS.sleep(3);
+                                    } catch (InterruptedException e) {
 
-                    // Capture
-                    takePhoto();
+                                    }
 
-                    // wait
-                    try {
-                        TimeUnit.SECONDS.sleep(3);
-                    } catch (InterruptedException e) {
+                                    // Auto land
+                                    flightController.startLanding(new CompletionCallback() {
+                                        @Override
+                                        public void onResult(DJIError djiError) {
+                                            DialogUtils.showDialogBasedOnError(getContext(), djiError);
+                                        }
+                                    });
+                                }
 
-                    }
-
-                    // Auto land
-                    flightController.startLanding(new CompletionCallback() {
-                        @Override
-                        public void onResult(DJIError djiError) {
-                            DialogUtils.showDialogBasedOnError(getContext(), djiError);
+                            });
                         }
                     });
-                }
+
             }
         });
     }
 
     private void flyYouFools(FlightController flightController) {
-        flightController.setVirtualStickModeEnabled(true, new CommonCallbacks.CompletionCallback() {
-            @Override
-            public void onResult(DJIError djiError) {
-                DialogUtils.showDialogBasedOnError(getContext(), djiError);
-            }
-        });
+        flightController.setVirtualStickModeEnabled(true, djiError -> DialogUtils.showDialogBasedOnError(getContext(), djiError));
 //        double lat = flightController.getState().getHomeLocation().getLatitude();
 
 //        float pY = 0.3f;
