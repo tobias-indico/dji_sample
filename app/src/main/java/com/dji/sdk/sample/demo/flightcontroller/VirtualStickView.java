@@ -196,18 +196,21 @@ public class VirtualStickView extends RelativeLayout
             float pitchJoyControlMaxSpeed = 10;
             float rollJoyControlMaxSpeed = 10;
 
-            if (horizontalCoordinateFlag) {
-                if (rollPitchControlModeFlag) {
-                    pitch = (float) (pitchJoyControlMaxSpeed * pX);
-
-                    roll = (float) (rollJoyControlMaxSpeed * pY);
-                } else {
-                    pitch = -(float) (pitchJoyControlMaxSpeed * pY);
-
-                    roll = (float) (rollJoyControlMaxSpeed * pX);
-                }
-            }
-
+//            if (horizontalCoordinateFlag) {
+//                if (rollPitchControlModeFlag) {
+//                    pitch = (float) (pitchJoyControlMaxSpeed * pX);
+//
+//                    roll = (float) (rollJoyControlMaxSpeed * pY);
+//                } else {
+//                    pitch = -(float) (pitchJoyControlMaxSpeed * pY);
+//
+//                    roll = (float) (rollJoyControlMaxSpeed * pX);
+//                }
+//            }
+                pitch = 0;
+                roll = 0;
+                yaw = .1f;
+                throttle = 0;//0.1f;
             if (null == sendVirtualStickDataTimer) {
                 sendVirtualStickDataTask = new SendVirtualStickDataTask();
                 sendVirtualStickDataTimer = new Timer();
