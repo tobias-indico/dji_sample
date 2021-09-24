@@ -286,6 +286,10 @@ public class MobileRemoteControllerView extends RelativeLayout
                     } catch (InterruptedException e) {
 
                     }
+
+                    // fly somewhere
+                    flyYouFools(flightController);
+
                     // Capture
                     takePhoto();
 
@@ -306,7 +310,18 @@ public class MobileRemoteControllerView extends RelativeLayout
                 }
             }
         });
+    }
 
+    private void flyYouFools(FlightController flightController) {
+//        double lat = flightController.getState().getHomeLocation().getLatitude();
+
+//        float pY = 0.3f;
+        while (!flightController.getState().hasReachedMaxFlightHeight()) {
+            if (mobileRemoteController != null) {
+//                        mobileRemoteController.setLeftStickHorizontal(pX);
+                mobileRemoteController.setLeftStickVertical(0.8f);
+            }
+        }
     }
 
     private void initCamera() {
