@@ -316,11 +316,17 @@ public class MobileRemoteControllerView extends RelativeLayout
 //        double lat = flightController.getState().getHomeLocation().getLatitude();
 
 //        float pY = 0.3f;
-        while (flightController.getState().getUltrasonicHeightInMeters() < 8) {
+//        ToastUtils.setResultToToast("Height " + flightController.getState().getUltrasonicHeightInMeters());
+        ToastUtils.setResultToToast("Height " + flightController.getState().getUltrasonicHeightInMeters());
+//        while (flightController.getState().getUltrasonicHeightInMeters() < 8) {
+        while (flightController.getState().getFlightTimeInSeconds() < 10) {
             if (mobileRemoteController != null) {
 //                        mobileRemoteController.setLeftStickHorizontal(pX);
-                mobileRemoteController.setLeftStickVertical(0.8f);
+                mobileRemoteController.setLeftStickVertical(1f);
             }
+        }
+        if (mobileRemoteController != null) {
+            mobileRemoteController.setLeftStickVertical(0);
         }
     }
 
