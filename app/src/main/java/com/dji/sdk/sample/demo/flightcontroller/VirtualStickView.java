@@ -330,7 +330,7 @@ public class VirtualStickView extends RelativeLayout
                 roll = (float) (rollJoyControlMaxSpeed * 0);
             }
         }
-        
+
         if (null == sendVirtualStickDataTimer) {
             sendVirtualStickDataTask = new SendVirtualStickDataTask();
             sendVirtualStickDataTimer = new Timer();
