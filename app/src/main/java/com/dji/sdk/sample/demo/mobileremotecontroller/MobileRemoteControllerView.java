@@ -216,12 +216,13 @@ public class MobileRemoteControllerView extends RelativeLayout
         }
         switch (v.getId()) {
             case R.id.btn_indico_mission:
-
                 indicoMission(flightController);
+                break;
+            case R.id.btn_log_stuff:
+                constantsCheck(flightController);
                 break;
 
             case R.id.btn_take_off:
-
                 flightController.startTakeoff(new CompletionCallback() {
                     @Override
                     public void onResult(DJIError djiError) {
@@ -317,9 +318,42 @@ public class MobileRemoteControllerView extends RelativeLayout
         });
     }
 
+    private void constantsCheck(FlightController flightController) {
+        ToastUtils.setResultToToast("Height " + flightController.getState().getUltrasonicHeightInMeters());
+        Log.d("Constanst_test", "getUltrasonicHeightInMeters: " + flightController.getState().getUltrasonicHeightInMeters());
+
+        Log.d("Constanst_test", "isFlightAssistantSupported: " + flightController.isFlightAssistantSupported());
+        ToastUtils.setResultToToast("isFlightAssistantSupported " + flightController.isFlightAssistantSupported());
+
+        Log.d("Constanst_test", "getIMUCount: " + flightController.getIMUCount());
+        ToastUtils.setResultToToast("getIMUCount " + flightController.getIMUCount());
+
+        Log.d("Constanst_test", "getCompassCount: " + flightController.getCompassCount());
+        ToastUtils.setResultToToast("getCompassCount " + flightController.getCompassCount());
+
+        Log.d("Constanst_test", "flightController.toString(): " + flightController.toString());
+    }
+
+
     private void flyYouFools(FlightController flightController) {
         flightController.setVirtualStickModeEnabled(true, djiError -> DialogUtils.showDialogBasedOnError(getContext(), djiError));
 
+//        float pY = 0.3f;
+//        ToastUtils.setResultToToast("Height " + flightController.getState().getUltrasonicHeightInMeters());
+        ToastUtils.setResultToToast("Height " + flightController.getState().getUltrasonicHeightInMeters());
+
+
+//        if (flightController.getState().hasReachedMaxFlightHeight()) {
+//            flightController.setStateCallback(flightControllerState -> {
+//                flightController.setMaxFlightHeight(55, djiError -> {
+//                    ToastUtils.setResultToToast("New max flight height set to 55");
+//                });
+//            });
+//            ToastUtils.setResultToToast("Reached max height " + flightController.getState().getUltrasonicHeightInMeters());
+//            Log.d("Constanst_test", "Reached max height: " + flightController.getState().getUltrasonicHeightInMeters());
+//        }
+
+//        while (flightController.getState().getUltrasonicHeightInMeters() < 8) {
         while (flightController.getState().getFlightTimeInSeconds() < 10) {
             if (mobileRemoteController != null) {
                 mobileRemoteController.setLeftStickVertical(1f);
